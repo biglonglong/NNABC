@@ -8,7 +8,10 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import copy
 import time
+import os
 from model import AlexNet
+
+model_save_dir = './model/AlexNet/model'
 
 
 def train_val_data_process():
@@ -116,7 +119,9 @@ def train_model_process(model, train_dataloader, val_dataloader, num_epochs):
                 "val_acc_all": val_acc_all}
     )
 
-    torch.save(best_model_wts, './model/AlexNet/model/best.pth')
+    os.makedirs(model_save_dir, exist_ok=True)
+
+    torch.save(best_model_wts, model_save_dir + '/best.pth')
 
     return train_process
 
@@ -140,7 +145,7 @@ def loss_acc_matplot(train_process):
     plt.title('Training and Validation Accuracy')
     
     plt.tight_layout()
-    plt.savefig('./model/AlexNet/model/training_curves.png', dpi=300, bbox_inches='tight')
+    plt.savefig(model_save_dir + '/training_curves.png', dpi=300, bbox_inches='tight')
     plt.show()
 
 

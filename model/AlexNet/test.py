@@ -5,6 +5,7 @@ from torchvision import transforms
 import torch.utils.data as Data
 from model import AlexNet
 import time
+import os
 
 def test_data_process():
     test_data = FashionMNIST(root='./data', 
@@ -84,7 +85,13 @@ def test_model_detail_process(model, test_dataloader):
 
 if __name__ == '__main__':
     model = AlexNet()
-    model.load_state_dict(torch.load('./model/AlexNet/model/best.pth'))
+
+    model_path = './model/AlexNet/model/best.pth'
+    if not os.path.exists(model_path):
+        print(f"❌ 错误：模型文件不存在 '{model_path}'")
+        print("请先运行训练脚本生成模型文件。")
+        exit(1)
+    model.load_state_dict(torch.load(model_path))
 
     test_dataloader = test_data_process()
     test_model_process(model, test_dataloader)

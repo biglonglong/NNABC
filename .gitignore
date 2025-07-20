@@ -1,4 +1,4 @@
-__pycache__/
-data/*/*
-model/*/model/*
+__pycache__
+data/*
+model/*/model
 temp.py

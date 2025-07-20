@@ -8,7 +8,10 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import copy
 import time
+import os
 from model import LeNet_5   # mark
+
+model_save_dir = './model/LeNet-5/model'      # mark
 
 
 def train_val_data_process():
@@ -35,7 +38,7 @@ def train_model_process(model, train_dataloader, val_dataloader, num_epochs):
 
     model = model.to(device)
     criterion = nn.CrossEntropyLoss()
-    optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
+    optimizer = torch.optim.Adam(model.parameters(), lr=0.001)      # mark
     best_model_wts = copy.deepcopy(model.state_dict())
 
     best_acc = 0.0
@@ -116,7 +119,9 @@ def train_model_process(model, train_dataloader, val_dataloader, num_epochs):
                 "val_acc_all": val_acc_all}
     )
 
-    torch.save(best_model_wts, './model/LeNet-5/model/best.pth')  # mark
+    os.makedirs(model_save_dir, exist_ok=True)
+
+    torch.save(best_model_wts, model_save_dir + '/best.pth')
 
     return train_process
 
@@ -140,12 +145,12 @@ def loss_acc_matplot(train_process):
     plt.title('Training and Validation Accuracy')
     
     plt.tight_layout()
-    plt.savefig('./model/LeNet-5/model/training_curves.png', dpi=300, bbox_inches='tight')    # mark
+    plt.savefig(model_save_dir + '/training_curves.png', dpi=300, bbox_inches='tight')
     plt.show()
 
 
 if __name__ == '__main__':
-    num_epochs = 2
+    num_epochs = 1  # mark
     model = LeNet_5()   # mark
     train_dataloader, val_dataloader = train_val_data_process()
     train_process = train_model_process(model, train_dataloader, val_dataloader, num_epochs)
