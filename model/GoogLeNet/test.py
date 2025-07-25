@@ -1,9 +1,9 @@
 import torch
 from torch import nn
+from model import GoogLeNet, Inception
+import torch.utils.data as Data
 from torchvision.datasets import FashionMNIST
 from torchvision import transforms
-import torch.utils.data as Data
-from model import GoogLeNet, Inception
 import time
 import os
 
@@ -84,6 +84,8 @@ def test_model_detail_process(model, test_dataloader):
                 print(f"❌ Sample {index+1:4d}: {true_class} → {pred_class} - ERROR")
 
 if __name__ == '__main__':
+    test_dataloader = test_data_process()
+
     model = GoogLeNet(Inception)
 
     model_path = './model/GoogLeNet/model/best.pth'
@@ -93,6 +95,5 @@ if __name__ == '__main__':
         exit(1)
     model.load_state_dict(torch.load(model_path))
 
-    test_dataloader = test_data_process()
     test_model_process(model, test_dataloader)
     # test_model_detail_process(model, test_dataloader)

@@ -37,11 +37,11 @@ class Residual(nn.Module):
 
 
 class ResNet(nn.Module):
-    def __init__(self, Residual):
+    def __init__(self, Residual, in_channels=1, out_channels=10):
         super().__init__()
 
         self.block1 = nn.Sequential(
-            nn.Conv2d(in_channels=1, out_channels=64, kernel_size=7, stride=2, padding=3),
+            nn.Conv2d(in_channels=in_channels, out_channels=64, kernel_size=7, stride=2, padding=3),
             nn.ReLU(),
             nn.BatchNorm2d(num_features=64),
             nn.MaxPool2d(kernel_size=3, stride=2, padding=1)
@@ -70,7 +70,7 @@ class ResNet(nn.Module):
         self.block2 = nn.Sequential(
             nn.AdaptiveAvgPool2d((1,1)),
             nn.Flatten(),
-            nn.Linear(in_features=1*512, out_features=10)
+            nn.Linear(in_features=1*512, out_features=out_channels)
         )
 
     def forward(self, x):
@@ -87,5 +87,8 @@ if __name__ == '__main__':
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     print(device)
 
+    channel_size = 1
+    height, width = 224, 224
+
     model = ResNet(Residual).to(device)
-    print(summary(model, input_size=(1,224,224)))
+    print(summary(model, input_size=(channel_size, height, width)))

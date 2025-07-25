@@ -1,7 +1,7 @@
 # from torchvision.datasets import FashionMNIST
-from torchvision import transforms
-from torchvision.datasets import ImageFolder
 import torch.utils.data as Data
+from torchvision.datasets import ImageFolder
+from torchvision import transforms
 import numpy as np
 
 
@@ -36,5 +36,4 @@ def train_val_data_process():
 
 
 if __name__ == '__main__':
-    '''[batch_size, channel_size, height, weight]'''
     train_val_data_process()

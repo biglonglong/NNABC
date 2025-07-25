@@ -4,13 +4,13 @@ from torchsummary import summary
 
 
 class LeNet_5(nn.Module):
-    def __init__(self):
+    def __init__(self, in_channels=1, out_channels=10):
         super().__init__()
         self.sig = nn.Sigmoid()
         self.flatten = nn.Flatten()
 
         self.conv1 = nn.Conv2d(
-            in_channels=1, out_channels=6, kernel_size=5, stride=1, padding=2   # mark
+            in_channels=in_channels, out_channels=6, kernel_size=5, stride=1, padding=2
         )
         self.subsampling1 = nn.AvgPool2d(kernel_size=2, stride=2, padding=0)
 
@@ -21,7 +21,7 @@ class LeNet_5(nn.Module):
         
         self.fc3 = nn.Linear(in_features=5*5*16, out_features=120)
         self.fc4 = nn.Linear(in_features=120, out_features=84)
-        self.fc5 = nn.Linear(in_features=84, out_features=10)   # mark
+        self.fc5 = nn.Linear(in_features=84, out_features=out_channels)
     
     def forward(self, x):
         x1 = self.sig(self.conv1(x))
@@ -34,10 +34,13 @@ class LeNet_5(nn.Module):
         x5 = self.fc5(x4)   # CrossEntropyLoss include softmax
         return x5
 
-
 if __name__ == '__main__':
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     print(device)
 
-    model = LeNet_5().to(device)
-    print(summary(model, input_size=(1,28,28))) # mark
+    channel_size = 1
+    height, width = 28, 28
+
+    model = LeNet_5().to(device)    # mark
+    # input shape: [batch_size, channel_size, height, width]
+    print(summary(model, input_size=(channel_size, height, width)))

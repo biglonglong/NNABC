@@ -1,14 +1,14 @@
 import torch
 from torch import nn
-from torchsummary import summary
 import torch.nn.functional as F
+from torchsummary import summary
 
 class VGG_16(nn.Module):
-    def __init__(self):
+    def __init__(self, in_channels=1, out_channels=10):
         super().__init__()
 
         self.block1 = nn.Sequential(
-            nn.Conv2d(in_channels=1, out_channels=64, kernel_size=3, stride=1, padding=1),
+            nn.Conv2d(in_channels=in_channels, out_channels=64, kernel_size=3, stride=1, padding=1),
             nn.ReLU(),
             nn.Conv2d(in_channels=64, out_channels=64, kernel_size=3, stride=1, padding=1),
             nn.ReLU(),
@@ -61,7 +61,7 @@ class VGG_16(nn.Module):
             nn.Linear(in_features=4096, out_features=4096),
             nn.ReLU(),
             nn.Dropout(0.5),
-            nn.Linear(in_features=4096, out_features=10)
+            nn.Linear(in_features=4096, out_features=out_channels)
         )
 
         for m in self.modules():
@@ -92,5 +92,8 @@ if __name__ == '__main__':
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     print(device)
 
+    channel_size = 1
+    height, width = 224, 224
+
     model = VGG_16().to(device)
-    print(summary(model, input_size=(1,224,224)))
+    print(summary(model, input_size=(channel_size, height, width)))

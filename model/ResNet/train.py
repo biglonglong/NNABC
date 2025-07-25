@@ -1,15 +1,15 @@
 import torch
 from torch import nn
+from model import ResNet, Residual
+import torch.utils.data as Data
 from torchvision.datasets import FashionMNIST
 from torchvision import transforms
-import torch.utils.data as Data
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import copy
 import time
 import os
-from model import ResNet, Residual
 
 model_save_dir = './model/ResNet/model'
 
@@ -33,19 +33,19 @@ def train_val_data_process():
     return train_dataloader, val_dataloader
 
 
-def train_model_process(model, train_dataloader, val_dataloader, num_epochs):
+def train_model_process(model, train_dataloader, val_dataloader, num_epochs=50, lr=0.001):
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
     model = model.to(device)
     criterion = nn.CrossEntropyLoss()
-    optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
+    optimizer = torch.optim.Adam(model.parameters(), lr=lr)
     best_model_wts = copy.deepcopy(model.state_dict())
 
-    best_acc = 0.0
-    average_train_loss_all = []
+    train_avg_loss_all = []
     train_acc_all = []
-    average_val_loss_all = []
+    val_avg_loss_all = []
     val_acc_all = []
+    best_acc = 0.0
 
     since = time.time()
     for epoch in range(num_epochs):
@@ -56,8 +56,8 @@ def train_model_process(model, train_dataloader, val_dataloader, num_epochs):
         val_num = 0
         val_loss = 0.0
         val_corrects = 0
-
         total_train_batches = len(train_dataloader)
+        
         for step, (b_x, b_y) in enumerate(train_dataloader):
             batch_x = b_x.to(device)
             batch_y = b_y.to(device)
@@ -94,9 +94,9 @@ def train_model_process(model, train_dataloader, val_dataloader, num_epochs):
             val_corrects += torch.sum(pre_label == batch_y.data)
             val_num += batch_x.size(0)
 
-        average_train_loss_all.append(train_loss / train_num)
+        train_avg_loss_all.append(train_loss / train_num)
         train_acc_all.append(train_corrects.double().item() / train_num)
-        average_val_loss_all.append(val_loss / val_num)
+        val_avg_loss_all.append(val_loss / val_num)
         val_acc_all.append(val_corrects.double().item() / val_num)
         
         if val_acc_all[-1] > best_acc:
@@ -104,17 +104,17 @@ def train_model_process(model, train_dataloader, val_dataloader, num_epochs):
             best_model_wts = copy.deepcopy(model.state_dict())
 
         time_use = time.time() - since
-        print(f'Train Loss: {average_train_loss_all[-1]:.4f} | '
+        print(f'Train Loss: {train_avg_loss_all[-1]:.4f} | '
               f'Train Acc: {train_acc_all[-1]:.4f} | '
-              f'Val Loss: {average_val_loss_all[-1]:.4f} | '
+              f'Val Loss: {val_avg_loss_all[-1]:.4f} | '
               f'Val Acc: {val_acc_all[-1]:.4f} | '
               f'Time: {(time_use//60):02.0f}m{(time_use%60):02.0f}s')
         print('-' * 90)
 
     train_process = pd.DataFrame(
         data={"epoch": range(num_epochs),
-                "average_train_loss_all": average_train_loss_all,
-                "average_val_loss_all": average_val_loss_all,
+                "train_avg_loss_all": train_avg_loss_all,
+                "val_avg_loss_all": val_avg_loss_all,
                 "train_acc_all": train_acc_all,
                 "val_acc_all": val_acc_all}
     )
@@ -129,8 +129,8 @@ def train_model_process(model, train_dataloader, val_dataloader, num_epochs):
 def loss_acc_matplot(train_process):
     plt.figure(figsize=(12,4))
     plt.subplot(1,2,1)
-    plt.plot(train_process['epoch'], train_process['average_train_loss_all'], 'ro-', label='train_loss')
-    plt.plot(train_process['epoch'], train_process['average_val_loss_all'], 'bs-', label='val_loss')
+    plt.plot(train_process['epoch'], train_process['train_avg_loss_all'], 'ro-', label='train_loss')
+    plt.plot(train_process['epoch'], train_process['val_avg_loss_all'], 'bs-', label='val_loss')
     plt.legend()
     plt.xlabel('epoch')
     plt.ylabel('loss')
@@ -151,7 +151,7 @@ def loss_acc_matplot(train_process):
 
 if __name__ == '__main__':
     num_epochs = 2
-    model = ResNet(Residual)
     train_dataloader, val_dataloader = train_val_data_process()
+    model = ResNet(Residual, 1, 10)
     train_process = train_model_process(model, train_dataloader, val_dataloader, num_epochs)
     loss_acc_matplot(train_process)

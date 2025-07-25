@@ -15,6 +15,9 @@
       - [VGG-16](#vgg-16)
       - [GoogLeNet](#googlenet)
       - [ResNet-18](#resnet-18)
+    - [RNN](#rnn)
+      - [LSTM](#lstm)
+      - [GRU](#gru)
 - [More](#more)
 - [References](#references)
 
@@ -47,12 +50,7 @@
 
 3. 安装对应版本 PyTorch 和相关包
    ```bash
-   conda install pytorch==1.10.1 torchvision==0.11.2 torchaudio==0.10.1 cudatoolkit=11.3 -c pytorch
-   conda install torchsummary==1.5.1
-   conda install numpy==1.23.2
-   conda install pandas==1.3.4
-   conda install matplotlib==3.5.0
-   conda install scikit-learn==1.3.0 
+   pip install -r requirements.txt
    ```
 
 ### Run
@@ -91,6 +89,12 @@
 
 ##### ResNet-18
 
+#### RNN
+
+##### LSTM
+
+##### GRU
+
 
 
 ## More
@@ -102,3 +106,5 @@
 ## References
 
 - [Pytorch框架与经典卷积神经网络与实战_哔哩哔哩_bilibili](https://www.bilibili.com/video/BV1e34y1M7wR/?spm_id_from=333.337.search-card.all.click)
+- [手把手教学|快速带你入门深度学习与实战_哔哩哔哩_bilibili](https://www.bilibili.com/video/BV1eP411w7Re/?spm_id_from=333.1387.homepage.video_card.click&vd_source=1a278fe24f00dd5c69f2875b5add5a19)
+

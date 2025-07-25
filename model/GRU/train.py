@@ -1,9 +1,10 @@
 import torch
 from torch import nn
-from model import AlexNet
+from model import GRU
 import torch.utils.data as Data
-from torchvision.datasets import FashionMNIST
-from torchvision import transforms
+from data import TextDataset
+import jieba
+import logging
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -11,29 +12,42 @@ import copy
 import time
 import os
 
-model_save_dir = './model/AlexNet/model'
+model_save_dir = './model/GRU/model'
+jieba.setLogLevel(logging.ERROR)
 
 
 def train_val_data_process():
-    train_data = FashionMNIST(root='./data', 
-                          train = True,
-                          transform=transforms.Compose([transforms.Resize(size=227), transforms.ToTensor()]),
-                          download=True)
+    ROOT_TRAIN = r'.\data\神雕侠侣.txt'
+
+    is_chinese = lambda c: u'\u4e00' <= c <= u'\u9fa5'
+    is_digit = lambda c: u'\u0030' <= c <= u'\u0039'
+    is_alpha = lambda c: (u'\u0041' <= c <= u'\u005a') or (u'\u0061' <= c <= u'\u007a')
+    is_punct = lambda c: c in ('，', '。', '：', '？', '"', '"', '！', '；', '、', '《', '》', '——')
+    is_valid = lambda c: is_chinese(c) or is_digit(c) or is_alpha(c) or is_punct(c)
+
+    with open(ROOT_TRAIN, 'r', encoding='gbk') as f:
+        text = f.read()
+        text = jieba.lcut(text)
+        text = list(filter(is_valid, text))
+
+    vocab = np.array(sorted(set(text)))
+
+    train_data = TextDataset(text, vocab, time_step=50)
 
     train_data, val_data = Data.random_split(train_data, lengths=[round(0.8*len(train_data)), round(0.2*len(train_data))])
     train_dataloader = Data.DataLoader(dataset=train_data,
-                                       batch_size=32,
+                                       batch_size=8,
                                        shuffle=True,
                                        num_workers=2)
     val_dataloader = Data.DataLoader(dataset=val_data,
-                                       batch_size=32,
+                                       batch_size=8,
                                        shuffle=True,
                                        num_workers=2)
-    
-    return train_dataloader, val_dataloader
+
+    return len(vocab), train_dataloader, val_dataloader
 
 
-def train_model_process(model, train_dataloader, val_dataloader, num_epochs=50, lr=0.001):
+def train_model_process(model, train_dataloader, val_dataloader, num_epochs=20, lr=0.001):
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
     model = model.to(device)
@@ -57,14 +71,19 @@ def train_model_process(model, train_dataloader, val_dataloader, num_epochs=50, 
         val_loss = 0.0
         val_corrects = 0
         total_train_batches = len(train_dataloader)
-        
+
+        hs = None
         for step, (b_x, b_y) in enumerate(train_dataloader):
             batch_x = b_x.to(device)
             batch_y = b_y.to(device)
 
             model.train()
-            output = model(batch_x)
-            pre_label = torch.argmax(output, dim=1)  
+            output, hs = model(batch_x, hs)
+
+            if hs is not None:
+                hs = hs.detach()
+
+            pre_label = torch.argmax(output, dim=1)
 
             loss = criterion(output, batch_y)
             optimizer.zero_grad()
@@ -74,7 +93,7 @@ def train_model_process(model, train_dataloader, val_dataloader, num_epochs=50, 
             train_loss += loss.item() * batch_x.size(0)
             train_corrects += torch.sum(pre_label == batch_y.data)
             train_num += batch_x.size(0)
-            
+
             if (step + 1) % 10 == 0 or step == total_train_batches - 1:
                 progress = (step + 1) / total_train_batches * 100
                 print(f'\rTraining {progress:5.1f}%', end='', flush=True)
@@ -85,7 +104,7 @@ def train_model_process(model, train_dataloader, val_dataloader, num_epochs=50, 
             batch_y = b_y.to(device)
 
             model.eval()
-            output = model(batch_x)
+            output, _ = model(batch_x, None)
             pre_label = torch.argmax(output, dim=1) 
 
             loss = criterion(output, batch_y)
@@ -150,8 +169,8 @@ def loss_acc_matplot(train_process):
 
 
 if __name__ == '__main__':
-    num_epochs = 2
-    train_dataloader, val_dataloader = train_val_data_process()
-    model = AlexNet(1, 10)
+    num_epochs = 1
+    vocab_size, train_dataloader, val_dataloader = train_val_data_process()
+    model = GRU(vocab_size)
     train_process = train_model_process(model, train_dataloader, val_dataloader, num_epochs)
     loss_acc_matplot(train_process)
