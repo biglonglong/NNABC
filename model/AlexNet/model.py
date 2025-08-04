@@ -61,5 +61,5 @@ if __name__ == '__main__':
     channel_size = 1
     height, width = 227, 227
 
-    model = AlexNet().to(device)
+    model = AlexNet(channel_size, 10).to(device)
     print(summary(model, input_size=(channel_size, height, width)))

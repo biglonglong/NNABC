@@ -47,7 +47,7 @@ if __name__ == '__main__':
 
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
-    model = GRU(vocab_size)
+    model = GRU(vocab_size, 512, 2, 0.5)
     model_path = './model/GRU/model/best.pth'
     if not os.path.exists(model_path):
         print(f"❌ 错误：模型文件不存在 '{model_path}'")

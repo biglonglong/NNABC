@@ -86,7 +86,7 @@ def test_model_detail_process(model, test_dataloader):
 if __name__ == '__main__':
     test_dataloader = test_data_process()
 
-    model = LeNet_5()   # mark
+    model = LeNet_5(1, 10)   # mark
 
     model_path = './model/LeNet-5/model/best.pth'     # mark
     if not os.path.exists(model_path):

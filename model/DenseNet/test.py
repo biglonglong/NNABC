@@ -1,6 +1,6 @@
 import torch
 from torch import nn
-from model import ResNet, Residual
+from model import DenseNet_121
 import torch.utils.data as Data
 from torchvision.datasets import FashionMNIST
 from torchvision import transforms
@@ -86,9 +86,9 @@ def test_model_detail_process(model, test_dataloader):
 if __name__ == '__main__':
     test_dataloader = test_data_process()
 
-    model = ResNet(Residual)
+    model = DenseNet_121(1, 10, 32, 4, 0.0)
 
-    model_path = './model/ResNet/model/best.pth'
+    model_path = './model/DenseNet/model/best.pth'
     if not os.path.exists(model_path):
         print(f"❌ 错误：模型文件不存在 '{model_path}'")
         print("请先运行训练脚本生成模型文件。")

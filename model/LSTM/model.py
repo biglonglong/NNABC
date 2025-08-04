@@ -40,6 +40,6 @@ if __name__ == '__main__':
     sequence_length = 50
     embedding_dim = 5000
 
-    model = LSTM(embedding_dim).to(device)
+    model = LSTM(embedding_dim, 512, 2, 0.5).to(device)
     # input shape: [batch_size, sequence_length, embedding_dim]
     summary(model, input_size=(batch_size, sequence_length, embedding_dim))

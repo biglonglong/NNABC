@@ -36,14 +36,14 @@ class Residual(nn.Module):
         return y
 
 
-class ResNet(nn.Module):
-    def __init__(self, Residual, in_channels=1, out_channels=10):
+class ResNet_18(nn.Module):
+    def __init__(self, in_channels=1, out_channels=10):
         super().__init__()
 
         self.block1 = nn.Sequential(
             nn.Conv2d(in_channels=in_channels, out_channels=64, kernel_size=7, stride=2, padding=3),
-            nn.ReLU(),
             nn.BatchNorm2d(num_features=64),
+            nn.ReLU(),
             nn.MaxPool2d(kernel_size=3, stride=2, padding=1)
         )
 
@@ -90,5 +90,5 @@ if __name__ == '__main__':
     channel_size = 1
     height, width = 224, 224
 
-    model = ResNet(Residual).to(device)
+    model = ResNet_18(channel_size, 10).to(device)
     print(summary(model, input_size=(channel_size, height, width)))

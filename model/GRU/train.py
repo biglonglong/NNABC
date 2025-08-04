@@ -171,6 +171,6 @@ def loss_acc_matplot(train_process):
 if __name__ == '__main__':
     num_epochs = 1
     vocab_size, train_dataloader, val_dataloader = train_val_data_process()
-    model = GRU(vocab_size)
+    model = GRU(vocab_size, 512, 2, 0.5)
     train_process = train_model_process(model, train_dataloader, val_dataloader, num_epochs)
     loss_acc_matplot(train_process)

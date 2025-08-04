@@ -95,5 +95,5 @@ if __name__ == '__main__':
     channel_size = 1
     height, width = 224, 224
 
-    model = VGG_16().to(device)
+    model = VGG_16(channel_size, 10).to(device)
     print(summary(model, input_size=(channel_size, height, width)))

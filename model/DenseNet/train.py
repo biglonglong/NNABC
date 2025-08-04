@@ -1,6 +1,6 @@
 import torch
 from torch import nn
-from model import GoogLeNet
+from model import DenseNet_121
 import torch.utils.data as Data
 from torchvision.datasets import FashionMNIST
 from torchvision import transforms
@@ -11,7 +11,7 @@ import copy
 import time
 import os
 
-model_save_dir = './model/GoogLeNet/model'
+model_save_dir = './model/DenseNet/model'
 
 
 def train_val_data_process():
@@ -22,11 +22,11 @@ def train_val_data_process():
 
     train_data, val_data = Data.random_split(train_data, lengths=[round(0.8*len(train_data)), round(0.2*len(train_data))])
     train_dataloader = Data.DataLoader(dataset=train_data,
-                                       batch_size=16,
+                                       batch_size=32,
                                        shuffle=True,
                                        num_workers=2)
     val_dataloader = Data.DataLoader(dataset=val_data,
-                                       batch_size=16,
+                                       batch_size=32,
                                        shuffle=True,
                                        num_workers=2)
     
@@ -152,6 +152,6 @@ def loss_acc_matplot(train_process):
 if __name__ == '__main__':
     num_epochs = 2
     train_dataloader, val_dataloader = train_val_data_process()
-    model = GoogLeNet(1, 10)
+    model = DenseNet_121(1, 10, 32, 4, 0.0)
     train_process = train_model_process(model, train_dataloader, val_dataloader, num_epochs)
     loss_acc_matplot(train_process)

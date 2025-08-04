@@ -86,7 +86,7 @@ def test_model_detail_process(model, test_dataloader):
 if __name__ == '__main__':
     test_dataloader = test_data_process()
     
-    model = AlexNet()
+    model = AlexNet(1, 10)
 
     model_path = './model/AlexNet/model/best.pth'
     if not os.path.exists(model_path):

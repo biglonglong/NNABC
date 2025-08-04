@@ -1,6 +1,6 @@
 import torch
 from torch import nn
-from model import GoogLeNet
+from model import ResNet_18
 import torch.utils.data as Data
 from torchvision.datasets import FashionMNIST
 from torchvision import transforms
@@ -86,14 +86,14 @@ def test_model_detail_process(model, test_dataloader):
 if __name__ == '__main__':
     test_dataloader = test_data_process()
 
-    model = GoogLeNet(1, 10)
+    model = ResNet_18(1, 10)
 
-    model_path = './model/GoogLeNet/model/best.pth'
+    model_path = './model/ResNet-18/model/best.pth'
     if not os.path.exists(model_path):
         print(f"❌ 错误：模型文件不存在 '{model_path}'")
         print("请先运行训练脚本生成模型文件。")
         exit(1)
     model.load_state_dict(torch.load(model_path))
 
-    test_model_process(model, test_dataloader)
-    # test_model_detail_process(model, test_dataloader)
+    # test_model_process(model, test_dataloader)
+    test_model_detail_process(model, test_dataloader)

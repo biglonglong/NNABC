@@ -41,7 +41,7 @@ class Inception(nn.Module):
 
 
 class GoogLeNet(nn.Module):
-    def __init__(self, Inception, in_channels=1, out_channels=10):
+    def __init__(self, in_channels=1, out_channels=10):
         super().__init__()
 
         self.block1 = nn.Sequential(
@@ -111,5 +111,5 @@ if __name__ == '__main__':
     channel_size = 1
     height, width = 224, 224
 
-    model = GoogLeNet(Inception).to(device)
+    model = GoogLeNet(channel_size, 10).to(device)
     print(summary(model, input_size=(channel_size, height, width)))

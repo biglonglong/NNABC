@@ -1,6 +1,6 @@
 import torch
 from torch import nn
-from model import ResNet, Residual
+from model import ResNet_18
 import torch.utils.data as Data
 from torchvision.datasets import FashionMNIST
 from torchvision import transforms
@@ -11,7 +11,7 @@ import copy
 import time
 import os
 
-model_save_dir = './model/ResNet/model'
+model_save_dir = './model/ResNet-18/model'
 
 
 def train_val_data_process():
@@ -152,6 +152,6 @@ def loss_acc_matplot(train_process):
 if __name__ == '__main__':
     num_epochs = 2
     train_dataloader, val_dataloader = train_val_data_process()
-    model = ResNet(Residual, 1, 10)
+    model = ResNet_18(1, 10)
     train_process = train_model_process(model, train_dataloader, val_dataloader, num_epochs)
     loss_acc_matplot(train_process)
