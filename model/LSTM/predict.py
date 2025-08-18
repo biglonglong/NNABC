@@ -9,11 +9,12 @@ import time
 import os
 import numpy as np
 
+time_step = 50
 jieba.setLogLevel(logging.ERROR)
 
 
 def test_data_process():
-    ROOT_TRAIN = r'.\data\神雕侠侣.txt'
+    ROOT_TRAIN = r'.\data\train.txt'
 
     is_chinese = lambda c: u'\u4e00' <= c <= u'\u9fa5'
     is_digit = lambda c: u'\u0030' <= c <= u'\u0039'
@@ -21,14 +22,14 @@ def test_data_process():
     is_punct = lambda c: c in ('，', '。', '：', '？', '"', '"', '！', '；', '、', '《', '》', '——')
     is_valid = lambda c: is_chinese(c) or is_digit(c) or is_alpha(c) or is_punct(c)
 
-    with open(ROOT_TRAIN, 'r', encoding='gbk') as f:
+    with open(ROOT_TRAIN, 'r', encoding='utf-8') as f:
         text = f.read()
         text = jieba.lcut(text)
         text = list(filter(is_valid, text))
 
     vocab = np.array(sorted(set(text)))
 
-    test_data = TextDataset(text, vocab, time_step=50)
+    test_data = TextDataset(text, vocab, time_step=time_step)
 
     test_dataloader = Data.DataLoader(dataset=test_data,
                                        batch_size=1,
@@ -39,11 +40,13 @@ def test_data_process():
 
 
 if __name__ == '__main__':
-    vocab_size, test_dataloader = test_data_process()
-    index = 0
+    time_step = 50
+    vocab_size, test_dataloader = test_data_process(time_step=time_step)
+    index = 275
     t_x, t_y = test_dataloader.dataset.__getitem__(index)
 
     class_names = test_dataloader.dataset.int2word
+    text_input = test_dataloader.dataset.text[index:index + time_step]
 
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
@@ -67,9 +70,9 @@ if __name__ == '__main__':
         pred_class = class_names[pre_label.item()]
         confidence_score = torch.max(probabilities, dim=1)[0].item()
 
+        print(f"输入文本: {''.join(text_input)}")
         print(f"预测结果: {pred_class}")
         print(f"置信度: {confidence_score:.4f}")
-        print(f"所有类别概率: {probabilities.cpu().numpy()}")
 
         true_class = class_names[t_y.item()]
         if pre_label.item() == t_y:

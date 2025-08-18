@@ -1,6 +1,5 @@
 import torch
 from torch import nn
-import torch.nn.functional as F
 from torchsummary import summary
 
 
@@ -33,7 +32,9 @@ class AlexNet(nn.Module):
         self.pooling5 = nn.MaxPool2d(kernel_size=3, stride=2, padding=0)
 
         self.fc6 = nn.Linear(in_features=6*6*256, out_features=4096)
+        self.dropout6 = nn.Dropout(p=0.5)
         self.fc7 = nn.Linear(in_features=4096, out_features=4096)
+        self.dropout7 = nn.Dropout(p=0.5)
         self.fc8 = nn.Linear(in_features=4096, out_features=out_channels)
 
     def forward(self, x):
@@ -47,9 +48,9 @@ class AlexNet(nn.Module):
         x5 = self.pooling5(x5)
         x6 = self.flatten(x5)
         x6 = self.relu(self.fc6(x6))
-        x6 = F.dropout(x6, 0.5)
+        x6 = self.dropout6(x6)
         x7 = self.relu(self.fc7(x6))
-        x7 = F.dropout(x7, 0.5)
+        x7 = self.dropout7(x7)
         x8 = self.fc8(x7)   # CrossEntropyLoss include softmax
         return x8
 

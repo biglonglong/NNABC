@@ -1,6 +1,5 @@
 import torch
 from torch import nn
-import torch.nn.functional as F
 from torchsummary import summary
 
 
@@ -8,7 +7,7 @@ class _DenseLayer(nn.Module):
     def __init__(self, in_channels, growth_rate, bn_size, dropout_rate=0.0):
         super().__init__()
         self.relu = nn.ReLU()
-        self.dropout_rate = dropout_rate
+        self.dropout = nn.Dropout(dropout_rate) if dropout_rate > 0 else None
 
         self.bn1 = nn.BatchNorm2d(num_features=in_channels)
         self.conv1 = nn.Conv2d(
@@ -24,8 +23,8 @@ class _DenseLayer(nn.Module):
         x1 = self.conv1(self.relu(self.bn1(x)))
         x2 = self.conv2(self.relu(self.bn2(x1)))
 
-        if self.dropout_rate > 0:
-            x2 = F.dropout(x2, self.dropout_rate)
+        if self.dropout is not None:
+            x2 = self.dropout(x2)
 
         y = torch.cat([x, x2], dim=1)
         return y

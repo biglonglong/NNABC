@@ -4,14 +4,14 @@ from torchinfo import summary
 
 
 class LSTM(nn.Module):
-    def __init__(self, embedding_dim, hidden_size=512, num_layers=2, dropout=0.5):
+    def __init__(self, embedding_dim, hidden_size=512, num_layers=2, dropout_rate=0.5):
         super().__init__()
 
         self.lstm = nn.LSTM(
             input_size = embedding_dim,
             hidden_size = hidden_size,
             num_layers = num_layers,
-            dropout=dropout,
+            dropout=dropout_rate,
             batch_first=True
         )
         """
@@ -37,9 +37,9 @@ if __name__ == '__main__':
     print(device)
 
     batch_size = 32
-    sequence_length = 50
+    seq_len = 50
     embedding_dim = 5000
 
     model = LSTM(embedding_dim, 512, 2, 0.5).to(device)
-    # input shape: [batch_size, sequence_length, embedding_dim]
-    summary(model, input_size=(batch_size, sequence_length, embedding_dim))
+    # input shape: [batch_size, seq_len, embedding_dim]
+    summary(model, input_size=(batch_size, seq_len, embedding_dim))

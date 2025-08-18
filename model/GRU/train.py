@@ -13,11 +13,12 @@ import time
 import os
 
 model_save_dir = './model/GRU/model'
+time_step = 50
 jieba.setLogLevel(logging.ERROR)
 
 
 def train_val_data_process():
-    ROOT_TRAIN = r'.\data\神雕侠侣.txt'
+    ROOT_TRAIN = r'.\data\train.txt'
 
     is_chinese = lambda c: u'\u4e00' <= c <= u'\u9fa5'
     is_digit = lambda c: u'\u0030' <= c <= u'\u0039'
@@ -25,24 +26,26 @@ def train_val_data_process():
     is_punct = lambda c: c in ('，', '。', '：', '？', '"', '"', '！', '；', '、', '《', '》', '——')
     is_valid = lambda c: is_chinese(c) or is_digit(c) or is_alpha(c) or is_punct(c)
 
-    with open(ROOT_TRAIN, 'r', encoding='gbk') as f:
+    with open(ROOT_TRAIN, 'r', encoding='utf-8') as f:
         text = f.read()
         text = jieba.lcut(text)
         text = list(filter(is_valid, text))
 
     vocab = np.array(sorted(set(text)))
 
-    train_data = TextDataset(text, vocab, time_step=50)
+    train_data = TextDataset(text, vocab, time_step=time_step)
 
     train_data, val_data = Data.random_split(train_data, lengths=[round(0.8*len(train_data)), round(0.2*len(train_data))])
     train_dataloader = Data.DataLoader(dataset=train_data,
                                        batch_size=8,
                                        shuffle=True,
-                                       num_workers=2)
+                                       num_workers=2,
+                                       drop_last=True)
     val_dataloader = Data.DataLoader(dataset=val_data,
                                        batch_size=8,
                                        shuffle=True,
-                                       num_workers=2)
+                                       num_workers=2,
+                                       drop_last=True)
 
     return len(vocab), train_dataloader, val_dataloader
 
@@ -172,5 +175,8 @@ if __name__ == '__main__':
     num_epochs = 1
     vocab_size, train_dataloader, val_dataloader = train_val_data_process()
     model = GRU(vocab_size, 512, 2, 0.5)
+
+    if os.path.exists(model_save_dir + '/best.pth'):
+        model.load_state_dict(torch.load(model_save_dir + '/best.pth'))
     train_process = train_model_process(model, train_dataloader, val_dataloader, num_epochs)
     loss_acc_matplot(train_process)

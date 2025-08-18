@@ -9,15 +9,17 @@
   - [Run](#run)
 - [Guide](#guide)
   - [Works](#works)
-    - [CNN](#cnn)
+    - [Classification](#classification)
       - [LeNet-5](#lenet-5)
       - [AlexNet](#alexnet)
       - [VGG-16](#vgg-16)
       - [GoogLeNet](#googlenet)
       - [ResNet-18](#resnet-18)
-    - [RNN](#rnn)
+      - [DenseNet](#densenet)
+    - [NLP](#nlp)
       - [LSTM](#lstm)
       - [GRU](#gru)
+      - [Transformer](#transformer)
 - [More](#more)
 - [References](#references)
 
@@ -77,7 +79,7 @@
 
 ### Works
 
-#### CNN
+#### Classification
 
 ##### LeNet-5
 
@@ -89,11 +91,15 @@
 
 ##### ResNet-18
 
-#### RNN
+##### DenseNet
+
+#### NLP
 
 ##### LSTM
 
 ##### GRU
+
+##### Transformer
 
 
 

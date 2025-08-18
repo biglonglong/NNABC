@@ -1,5 +1,4 @@
 import torch
-from torch import nn
 from sklearn.preprocessing import OneHotEncoder
 import torch.utils.data as Data
 import numpy as np
@@ -17,7 +16,7 @@ class TextDataset(Data.Dataset):
 
         self.text_indices = [self.word2int[word] for word in self.text]
 
-        self.encoder = OneHotEncoder(sparse_output=False).fit(self.vocab.reshape(-1, 1))
+        self.encoder = OneHotEncoder(sparse=False).fit(self.vocab.reshape(-1, 1))
 
     def __len__(self):
         return len(self.text_indices) - self.time_step

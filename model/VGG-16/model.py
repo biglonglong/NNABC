@@ -1,6 +1,5 @@
 import torch
 from torch import nn
-import torch.nn.functional as F
 from torchsummary import summary
 
 class VGG_16(nn.Module):
