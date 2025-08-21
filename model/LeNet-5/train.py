@@ -67,9 +67,17 @@ def train_model_process(model, train_dataloader, val_dataloader, num_epochs=50, 
             pre_label = torch.argmax(output, dim=1)  
 
             loss = criterion(output, batch_y)
+
             optimizer.zero_grad()
+            # for param in model.parameters():
+            #     param.grad.zero_()
+            
             loss.backward()
+
             optimizer.step()
+            # for param in model.parameters():
+            #     param.grad.data = torch.clamp(param.grad.data, -1, 1)
+            #     param.data -= param.grad.data * lr  # mark
 
             train_loss += loss.item() * batch_x.size(0)
             train_corrects += torch.sum(pre_label == batch_y.data)
@@ -122,6 +130,7 @@ def train_model_process(model, train_dataloader, val_dataloader, num_epochs=50, 
     os.makedirs(model_save_dir, exist_ok=True)
 
     torch.save(best_model_wts, model_save_dir + '/best.pth')
+    torch.save(model, model_save_dir + '/model.pkl')
 
     return train_process
 

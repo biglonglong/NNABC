@@ -64,7 +64,7 @@ def train_model_process(model, train_dataloader, val_dataloader, num_epochs=50, 
 
             model.train()
             output = model(batch_x)
-            pre_label = torch.argmax(output, dim=1)  
+            pre_label = torch.argmax(output, dim=1)
 
             loss = criterion(output, batch_y)
             optimizer.zero_grad()
@@ -74,7 +74,7 @@ def train_model_process(model, train_dataloader, val_dataloader, num_epochs=50, 
             train_loss += loss.item() * batch_x.size(0)
             train_corrects += torch.sum(pre_label == batch_y.data)
             train_num += batch_x.size(0)
-            
+
             if (step + 1) % 10 == 0 or step == total_train_batches - 1:
                 progress = (step + 1) / total_train_batches * 100
                 print(f'\rTraining {progress:5.1f}%', end='', flush=True)

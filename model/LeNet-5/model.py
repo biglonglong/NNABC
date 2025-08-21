@@ -44,3 +44,5 @@ if __name__ == '__main__':
     model = LeNet_5(channel_size, 10).to(device)    # mark
     # input shape: [batch_size, channel_size, height, width]
     print(summary(model, input_size=(channel_size, height, width)))
+    # print(model)
+    # print(model.conv1)

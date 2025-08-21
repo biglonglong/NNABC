@@ -2,14 +2,13 @@ import torch
 from torch import nn
 from model import LSTM
 import torch.utils.data as Data
-from data import TextDataset
+from data import TextDataset, TIME_STEP
 import jieba
 import logging
 import time
 import os
 import numpy as np
 
-time_step = 50
 jieba.setLogLevel(logging.ERROR)
 
 
@@ -29,7 +28,7 @@ def test_data_process():
 
     vocab = np.array(sorted(set(text)))
 
-    test_data = TextDataset(text, vocab, time_step=time_step)
+    test_data = TextDataset(text, vocab)
 
     test_dataloader = Data.DataLoader(dataset=test_data,
                                        batch_size=1,
@@ -40,17 +39,16 @@ def test_data_process():
 
 
 if __name__ == '__main__':
-    time_step = 50
-    vocab_size, test_dataloader = test_data_process(time_step=time_step)
-    index = 275
+    vocab_size, test_dataloader = test_data_process()
+    index = 260
     t_x, t_y = test_dataloader.dataset.__getitem__(index)
 
     class_names = test_dataloader.dataset.int2word
-    text_input = test_dataloader.dataset.text[index:index + time_step]
+    text_input = test_dataloader.dataset.text[index:index + TIME_STEP]
 
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
-    model = LSTM(vocab_size, 512, 2, 0.5)
+    model = LSTM(vocab_size, vocab_size, 512, 2, 0.5)
     model_path = './model/LSTM/model/best.pth'
     if not os.path.exists(model_path):
         print(f"❌ 错误：模型文件不存在 '{model_path}'")

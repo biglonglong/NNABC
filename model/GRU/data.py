@@ -3,14 +3,15 @@ from sklearn.preprocessing import OneHotEncoder
 import torch.utils.data as Data
 import numpy as np
 
+TIME_STEP = 50
 
 class TextDataset(Data.Dataset):
-    def __init__(self, text, vocab, time_step=50):
+    def __init__(self, text, vocab):
         super().__init__()
         self.text = text
         self.vocab = vocab
-        self.time_step = time_step
-        
+        self.time_step = TIME_STEP
+
         self.int2word = {i:word for i, word in enumerate(vocab)}
         self.word2int = {word:i for i, word in self.int2word.items()}
 

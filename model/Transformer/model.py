@@ -250,8 +250,10 @@ class Transformer(nn.Module):
         for name, param in self.named_parameters():
             if param.dim() > 1:
                 if "weight" in name:
+                    # param.requires_grad = False
                     nn.init.xavier_uniform_(param)
                 elif "bias" in name:
+                    # param.requires_grad = False
                     nn.init.zeros_(param)
 
     def forward(self, src, tgt, src_mask=None, tgt_mask=None, memory_mask=None,

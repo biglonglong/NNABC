@@ -1,39 +1,84 @@
-# from torchvision.datasets import FashionMNIST
-import torch.utils.data as Data
-from torchvision.datasets import ImageFolder
-from torchvision import transforms
-import numpy as np
+import torch
+from torch.utils.data import Dataset
+import pandas as pd
+from torchtext.data.utils import get_tokenizer
+from torchtext.vocab import build_vocab_from_iterator
 
 
-def train_val_data_process():
-    # train_data = FashionMNIST(root='./data', 
-    #                       train = True,
-    #                       transform=transforms.Compose([transforms.Resize(size=28), transforms.ToTensor()]),
-    #                       download=True)
+class TextDataset(Dataset):
+    def __init__(self, text, label, 
+                tokenizer=None, build_vocab=True, vocab=None,
+                max_length=512, min_freq=10):
+        '''
+        build_vocab & vocab ->
+        - True & None:    build vocab from text by tokenizer
+        - False & None:   return the tokens only after tokenizer
+        - Any & not None: use provided vocab
+        '''
 
-    ROOT_TRAIN = r'.\dataset_split\train'
+        super().__init__()
+        self.text = text
+        self.label = label
+        self.tokenizer = tokenizer or get_tokenizer('basic_english')
+        self.max_length = max_length
+        self.min_freq = min_freq
+        
+        if vocab is None and build_vocab:
+            self.vocab = self._build_vocab()
+        else:
+            self.vocab = vocab
 
-    normalize = transforms.Normalize([0.162, 0.151, 0.138], [0.058, 0.052, 0.048])
-    transform_train = transforms.Compose([transforms.Resize((224,224)), transforms.ToTensor(), normalize])
+    def _build_vocab(self):
+        # use when tokenizer without vocab
+        def yield_tokens():
+            for text in self.text:
+                try:
+                    if isinstance(text, str):
+                        tokens = self.tokenizer(text.lower())
+                        yield tokens
+                    else:
+                        tokens = str(text).lower().split()
+                        yield tokens
+                except (TypeError, AttributeError, ValueError):
+                    tokens = str(text).lower().split()
+                    yield tokens
 
-    train_data = ImageFolder(ROOT_TRAIN, transform_train)
+        vocab = build_vocab_from_iterator(
+            yield_tokens(),
+            min_freq=self.min_freq,
+            specials=['<unk>', '<pad>']
+        )
+        vocab.set_default_index(vocab['<unk>'])
+        return vocab
+    
+        # from collections import Counter
+        # from torchtext.vocab import Vocab
+        # counter = Counter()
+        # counter.update(self.tokenizer(text.lower()))
+        # filtered_counter = Counter({token: count for token, count in counter.items() if count >= self.min_freq})
+        # vocab = Vocab(filtered_counter, specials=['<unk>', '<pad>'])
+        # vocab.set_default_index(vocab['<unk>'])
+        # return vocab
 
-    class_label = train_data.classes
-    class_idx = train_data.class_to_idx
+    def __len__(self):
+        # data length
+        return len(self.text)
 
-    train_data, val_data = Data.random_split(train_data, lengths=[round(0.8*len(train_data)), round(0.2*len(train_data))])
+    def __getitem__(self, idx):
+        # transfrom text[idx], label[idx] -> Tensor(token_ids, label)
+        text = self.text[idx]
+        label = self.label[idx]
+        tokens = self.tokenizer(text.lower())
 
-    train_dataloader = Data.DataLoader(dataset=train_data,
-                                       batch_size=64,
-                                       shuffle=True,
-                                       num_workers=2)
-    val_dataloader = Data.DataLoader(dataset=val_data,
-                                       batch_size=64,
-                                       shuffle=True,
-                                       num_workers=2)
+        if self.vocab:
+            token_ids = [self.vocab[token] for token in tokens]
 
-    return train_dataloader, val_dataloader
+            # Padding
+            if len(token_ids) < self.max_length:
+                token_ids.extend([self.vocab['<pad>']] * (self.max_length - len(token_ids)))
+            else:
+                token_ids = token_ids[:self.max_length]
 
-
-if __name__ == '__main__':
-    train_val_data_process()
+            return torch.tensor(token_ids, dtype=torch.long), torch.tensor(label, dtype=torch.long)
+        
+        return tokens, label

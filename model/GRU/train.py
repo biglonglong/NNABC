@@ -13,7 +13,6 @@ import time
 import os
 
 model_save_dir = './model/GRU/model'
-time_step = 50
 jieba.setLogLevel(logging.ERROR)
 
 
@@ -30,10 +29,8 @@ def train_val_data_process():
         text = f.read()
         text = jieba.lcut(text)
         text = list(filter(is_valid, text))
-
     vocab = np.array(sorted(set(text)))
-
-    train_data = TextDataset(text, vocab, time_step=time_step)
+    train_data = TextDataset(text, vocab)
 
     train_data, val_data = Data.random_split(train_data, lengths=[round(0.8*len(train_data)), round(0.2*len(train_data))])
     train_dataloader = Data.DataLoader(dataset=train_data,
@@ -50,7 +47,7 @@ def train_val_data_process():
     return len(vocab), train_dataloader, val_dataloader
 
 
-def train_model_process(model, train_dataloader, val_dataloader, num_epochs=20, lr=0.001):
+def train_model_process(model, train_dataloader, val_dataloader, num_epochs=50, lr=0.001):
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
     model = model.to(device)
@@ -74,7 +71,7 @@ def train_model_process(model, train_dataloader, val_dataloader, num_epochs=20, 
         val_loss = 0.0
         val_corrects = 0
         total_train_batches = len(train_dataloader)
-
+        
         hs = None
         for step, (b_x, b_y) in enumerate(train_dataloader):
             batch_x = b_x.to(device)
@@ -174,7 +171,7 @@ def loss_acc_matplot(train_process):
 if __name__ == '__main__':
     num_epochs = 1
     vocab_size, train_dataloader, val_dataloader = train_val_data_process()
-    model = GRU(vocab_size, 512, 2, 0.5)
+    model = GRU(vocab_size, vocab_size, 512, 2, 0.5)
 
     if os.path.exists(model_save_dir + '/best.pth'):
         model.load_state_dict(torch.load(model_save_dir + '/best.pth'))

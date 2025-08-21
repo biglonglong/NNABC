@@ -13,7 +13,6 @@ import time
 import os
 
 model_save_dir = './model/LSTM/model'
-time_step = 50
 jieba.setLogLevel(logging.ERROR)
 
 
@@ -30,10 +29,8 @@ def train_val_data_process():
         text = f.read()
         text = jieba.lcut(text)
         text = list(filter(is_valid, text))
-
     vocab = np.array(sorted(set(text)))
-
-    train_data = TextDataset(text, vocab, time_step=time_step)
+    train_data = TextDataset(text, vocab)
 
     train_data, val_data = Data.random_split(train_data, lengths=[round(0.8*len(train_data)), round(0.2*len(train_data))])
     train_dataloader = Data.DataLoader(dataset=train_data,
@@ -174,7 +171,7 @@ def loss_acc_matplot(train_process):
 if __name__ == '__main__':
     num_epochs = 1
     vocab_size, train_dataloader, val_dataloader = train_val_data_process()
-    model = LSTM(vocab_size, 512, 2, 0.5)
+    model = LSTM(vocab_size, vocab_size, 512, 2, 0.5)
 
     if os.path.exists(model_save_dir + '/best.pth'):
         model.load_state_dict(torch.load(model_save_dir + '/best.pth'))

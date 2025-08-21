@@ -4,7 +4,7 @@ from torchinfo import summary
 
 
 class GRU(nn.Module):
-    def __init__(self, embedding_dim, hidden_size=512, num_layers=2, dropout_rate=0.5):
+    def __init__(self, embedding_dim, vocab_size, hidden_size=512, num_layers=2, dropout_rate=0.5):
         super().__init__()
 
         self.gru = nn.GRU(
@@ -23,7 +23,7 @@ class GRU(nn.Module):
             hs: 最后一层隐藏状态 (l_h_n, l_c_n), [batch_size, hidden_embedding_dim]  !!!
         """
     
-        self.linear = nn.Linear(hidden_size, embedding_dim)
+        self.linear = nn.Linear(hidden_size, vocab_size)
 
     def forward(self, sequence, hs=None):     
         out, hs = self.gru(sequence, hs)     
@@ -38,8 +38,9 @@ if __name__ == '__main__':
 
     batch_size = 32
     seq_len = 50
-    embedding_dim = 5000
+    embedding_dim = 512
+    vocab_size = 5000
 
-    model = GRU(embedding_dim, 512, 2, 0.5).to(device)
+    model = GRU(embedding_dim, vocab_size, 512, 2, 0.5).to(device)
     # input shape: [batch_size, seq_len, embedding_dim]
     summary(model, input_size=(batch_size, seq_len, embedding_dim))
