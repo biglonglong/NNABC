@@ -1,5 +1,7 @@
-.vscode/
 __pycache__
-data/*
-model/*/model/
+.vscode
+tmp/
+data/
+huggingface/
 temp.py
+model/*/model

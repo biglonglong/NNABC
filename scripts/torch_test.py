@@ -11,8 +11,8 @@ if __name__ == "__main__":
     cudnn_version = torch.backends.cudnn.version()
 
     if flag and ngpu > 0:
-        print(f"PyTorch Version:\t {torch_version}")
-        print(f"number of GPUs:\t {ngpu}")
+        print(f"Torch Version:\t {torch_version}")
+        print(f"Number of GPUs:\t {ngpu}")
         print(f"\'cuda:0:\':\t {torch.cuda.get_device_name(0)}")
         print(f"CUDA Version:\t {cuda_version}")
         print(f"cuDNN Version:\t {cudnn_version}")

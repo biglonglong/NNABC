@@ -54,7 +54,7 @@ if __name__ == '__main__':
         print(f"❌ 错误：模型文件不存在 '{model_path}'")
         print("请先运行训练脚本生成模型文件。")
         exit(1)
-    model.load_state_dict(torch.load(model_path))
+    model.load_state_dict(torch.load(model_path, weights_only=True))
     model = model.to(device)
 
     with torch.no_grad():

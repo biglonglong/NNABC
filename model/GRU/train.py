@@ -174,6 +174,6 @@ if __name__ == '__main__':
     model = GRU(vocab_size, vocab_size, 512, 2, 0.5)
 
     if os.path.exists(model_save_dir + '/best.pth'):
-        model.load_state_dict(torch.load(model_save_dir + '/best.pth'))
+        model.load_state_dict(torch.load(model_save_dir + '/best.pth', weights_only=True))
     train_process = train_model_process(model, train_dataloader, val_dataloader, num_epochs)
     loss_acc_matplot(train_process)
