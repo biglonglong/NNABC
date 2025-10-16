@@ -1,5 +1,6 @@
 __pycache__
 .vscode
+NNABC_venv
 tmp/
 data/
 huggingface/

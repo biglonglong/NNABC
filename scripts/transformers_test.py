@@ -9,7 +9,8 @@ from transformers import pipeline
 # outputs = model(**inputs)
 
 
-classifier = pipeline("sentiment-analysis", cache_dir="./model")
+classifier = pipeline("sentiment-analysis")
+# classifier = pipeline("./huggingface/sentiment-analysis")
 output = classifier(
     "We are very happy to introduce pipeline to the transformers repository."
 )

@@ -13,10 +13,11 @@ if __name__ == "__main__":
     if flag and ngpu > 0:
         print(f"Torch Version:\t {torch_version}")
         print(f"Number of GPUs:\t {ngpu}")
-        print(f"\'cuda:0:\':\t {torch.cuda.get_device_name(0)}")
+        print(f"'cuda:0:':\t {torch.cuda.get_device_name(0)}")
         print(f"CUDA Version:\t {cuda_version}")
         print(f"cuDNN Version:\t {cudnn_version}")
         print(torch.rand(3, 3).cuda())
     else:
         print("CUDA is not available. Running on CPU.")
         print(torch.rand(3, 3))
+        # watch -n 2 nvidia-smi

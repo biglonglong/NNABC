@@ -51,6 +51,7 @@ if __name__ == "__main__":
     if tokenizer.pad_token is None:
         tokenizer.pad_token = tokenizer.eos_token
     model = AutoModelForCausalLM.from_pretrained(MODEL_PATH, cache_dir="./huggingface")
+    print(model)
 
     # preprocess
     train_dataset = TextDataset(
@@ -92,35 +93,9 @@ if __name__ == "__main__":
     )  # , compute_metrics=compute_metrics
 
     # finetune
-    f"------------------------------------------ \n"
     trainer.train()
     print(trainer.evaluate())
-    f"------------------------------------------ "
 
     # save
-    trainer.save_model(OUTPUT_DIR + "/finetuned_distilgpt2")
     tokenizer.save_pretrained(OUTPUT_DIR)
-    print(f"✅ 模型已保存到: {OUTPUT_DIR}")
-
-    # test
-    model.eval()
-    test_prompts = ["The future of", "In the year", "Technology will"]
-
-    for prompt in test_prompts:
-        encoded = tokenizer(prompt, return_tensors="pt", padding=True)
-        input_ids = encoded["input_ids"].to(DEVICE)
-        attention_mask = encoded["attention_mask"].to(DEVICE)
-
-        with torch.no_grad():
-            output = model.generate(
-                input_ids,
-                attention_mask=attention_mask,
-                max_length=input_ids.size(1) + 30,
-                num_return_sequences=1,
-                temperature=0.8,
-                pad_token_id=tokenizer.eos_token_id,
-                do_sample=True,
-            )
-
-        generated_text = tokenizer.decode(output[0], skip_special_tokens=True)
-        print(f"💬 '{prompt}' → '{generated_text}'")
+    trainer.save_model(OUTPUT_DIR + "/finetuned_distilgpt2")

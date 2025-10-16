@@ -1,27 +1,6 @@
 ## Overview
 
-这是一些基础神经网络模型的复现，包括CNN（Lenet、ResNet）等，进行中…
-
-- [Overview](#overview)
-- [Installation and Usage](#installation-and-usage)
-  - [Prerequisites](#prerequisites)
-  - [Steps](#steps)
-  - [Run](#run)
-- [Guide](#guide)
-  - [Works](#works)
-    - [Classification](#classification)
-      - [LeNet-5](#lenet-5)
-      - [AlexNet](#alexnet)
-      - [VGG-16](#vgg-16)
-      - [GoogLeNet](#googlenet)
-      - [ResNet-18](#resnet-18)
-      - [DenseNet](#densenet)
-    - [NLP](#nlp)
-      - [LSTM](#lstm)
-      - [GRU](#gru)
-      - [Transformer](#transformer)
-- [More](#more)
-- [References](#references)
+这是一些基础神经网络模型的复现，包括CNN（Lenet、ResNet）、RNN（LSTM、GRU）、Transformers等，供初学者参考…
 
 
 
@@ -38,7 +17,7 @@
 1. 创建并激活特定 Python 解释器版本的 conda 环境
 
    ```bash
-   conda create -n pytorch python==3.8
+   conda create -n pytorch python==3.12
    conda env list
    conda activate pytorch
    conda list
@@ -62,13 +41,21 @@
    conda activate pytorch
    ```
 
-2. 导航到所需的模型目录并运行训练脚本：
+2. 运行测试脚本验证环境配置：
+
+   ```bash
+   python scripts/torch_test.py
+   python scripts/transformers_test.py
+   ```
+
+3. 导航到所需的模型目录并运行训练脚本：
+
    ```bash
    cd AlexNet  # 或其他任何模型目录
    python train.py
    ```
 
-3. 完成后停用环境：
+4. 完成后停用环境：
    ```bash
    conda deactivate
    ```
