@@ -1,6 +1,6 @@
 ## Overview
 
-这是一些基础神经网络模型的复现，包括CNN（Lenet、ResNet）、RNN（LSTM、GRU）、Transformers等，供初学者参考…
+这是一个系统性的算法演示仓库，从经典的神经网络基础逐步扩展到现代大语言模型(LLM)。包括CNN（Lenet、ResNet）、RNN（LSTM、GRU）、Transformers（distilgpt2、Qwen）等，供初学者参考…
 
 
 
@@ -64,29 +64,15 @@
 
 ## Guide
 
-### Works
-
-#### Classification
-
-##### LeNet-5
-
-##### AlexNet
-
-##### VGG-16
-
-##### GoogLeNet
-
-##### ResNet-18
-
-##### DenseNet
-
-#### NLP
-
-##### LSTM
-
-##### GRU
-
-##### Transformer
+| Classification | NLP                                  |
+| -------------- | ------------------------------------ |
+| LeNet-5        | LSTM                                 |
+| AlexNet        | GRU                                  |
+| VGG-16         | Transformer（distilgpt2 fine-tune）  |
+| GoogLeNet      | mini_qwen_grpo（Qwen-0.5B sft/grpo） |
+| ResNet-18      |                                      |
+| DenseNet       |                                      |
+|                |                                      |
 
 
 
@@ -100,4 +86,5 @@
 
 - [Pytorch框架与经典卷积神经网络与实战_哔哩哔哩_bilibili](https://www.bilibili.com/video/BV1e34y1M7wR/?spm_id_from=333.337.search-card.all.click)
 - [手把手教学|快速带你入门深度学习与实战_哔哩哔哩_bilibili](https://www.bilibili.com/video/BV1eP411w7Re/?spm_id_from=333.1387.homepage.video_card.click&vd_source=1a278fe24f00dd5c69f2875b5add5a19)
+- [liuchen6667/qwen_grpo_gsm8k: 简单易理解的代码，用于在qwen上使用grpo加强数学能力](https://github.com/liuchen6667/qwen_grpo_gsm8k)
 
