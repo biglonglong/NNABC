@@ -9,9 +9,10 @@ from reward import REWARD_MAP
 def train(args):
     model = AutoModelForCausalLM.from_pretrained(
         args.model_name_or_path,
-        torch_dtype=torch.bfloat16 if args.bf16 else None,
-        device_map=None,
         cache_dir=args.cache_dir,
+        dtype=torch.bfloat16 if args.bf16 else None,
+        use_cache=False,
+        device_map=None,
     ).to("cuda")
 
     tokenizer = AutoTokenizer.from_pretrained(
@@ -44,7 +45,6 @@ def train(args):
         report_to=args.report_to,
         num_generations=args.num_generations,
         use_vllm=args.use_vllm,
-        vllm_device=args.vllm_device,
         vllm_gpu_memory_utilization=args.vllm_gpu_ratio,
     )
 

@@ -8,9 +8,10 @@ from utils import get_dataset
 def train(args):
     model = AutoModelForCausalLM.from_pretrained(
         args.model_name_or_path,
-        torch_dtype=torch.bfloat16 if args.bf16 else None,
-        device_map=None,
         cache_dir=args.cache_dir,
+        dtype=torch.bfloat16 if args.bf16 else None,
+        use_cache=False,
+        device_map=None,
     ).to("cuda")
 
     tokenizer = AutoTokenizer.from_pretrained(

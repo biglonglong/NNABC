@@ -1,8 +1,10 @@
 __pycache__
 .vscode
 NNABC_venv
-tmp/
 data/
-huggingface/
-temp.py
 model/*/model
+huggingface
+checkpoint
+swanlog
+tmp
+temp.py

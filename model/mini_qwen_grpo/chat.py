@@ -6,12 +6,12 @@ from utils import SYSTEM_PROMPT
 
 def chat(args):
     model = AutoModelForCausalLM.from_pretrained(
-        args.checkpoint_dir, torch_dtype="auto", device_map="auto"
+        args.checkpoint_dir, dtype="auto", device_map="auto"
     )
     tokenizer = AutoTokenizer.from_pretrained(args.checkpoint_dir)
 
     while True:
-        prompt = input("what's your question?\n")
+        prompt = input("User: what's your question?\n")
         if prompt.lower() in ("exit", "bye", "quit"):
             print("Assistant: Bye👋")
             break
@@ -51,7 +51,7 @@ def chat_vllm(args):
     )
 
     while True:
-        prompt = input("what's your question?\n")
+        prompt = input("User: what's your question?\n")
         if prompt.lower() in ("exit", "bye", "quit"):
             print("Assistant: Bye👋")
             break

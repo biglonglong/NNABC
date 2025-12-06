@@ -78,7 +78,12 @@
 
 ## More
 
-本仓库仅源代码，您可以通过阅读 [NN Basic | 龙犊&小窝🪹~](https://biglonglong.github.io/home/posts/know/nn-basic/) 了解各个模型的独特设计和优缺点。
+本仓库仅源代码，您可以通过阅读
+
+- [NN Basic | 龙犊&小窝🪹~](https://biglonglong.github.io/home/posts/know/nn-basic/) 
+- [LLM Basic | 龙犊&小窝🪹~](https://biglonglong.github.io/home/posts/know/llm-basic/)
+
+了解各个模型的独特设计和优缺点。
 
 
 

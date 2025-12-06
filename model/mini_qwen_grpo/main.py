@@ -27,7 +27,7 @@ def main():
         "--model_name_or_path",
         type=str,
         required=False,
-        default="Qwen/Qwen2.5-0.5B-Instruct",  # https://huggingface.co/Qwen/Qwen2.5-0.5B-Instruct
+        default=None,
         help="The model name or path of the pre-trained model from huggingface.",
     )
     parser.add_argument(
@@ -141,7 +141,7 @@ def main():
         "--max_grad_norm",
         type=float,
         required=False,
-        default=0.1,
+        default=1.0,
         help="Maximum gradient norm for gradient clipping.",
     )
     parser.add_argument(
@@ -192,20 +192,10 @@ def main():
         help="Whether to use vLLM for generating completions.",
     )
     parser.add_argument(
-        "--vllm_device",
-        type=str,
-        required=False,
-        default="cuda:0",
-        help='Device where vLLM generation will run, e.g. `"cuda:1"`. If set to `"auto"` (default), the system will'
-        "automatically select the next available GPU after the last one used for training. This assumes that"
-        "training has not already occupied all available GPUs. If only one device is available, the device will be"
-        "shared between both training and vLLM.",
-    )
-    parser.add_argument(
         "--vllm_gpu_ratio",
         type=float,
         required=False,
-        default=0.2,
+        default=0.9,
         help="Ratio (between 0 and 1) of GPU memory to reserve for the model weights, activations, and KV cache on the"
         "device dedicated to generation powered by vLLM. Higher values will increase the KV cache size and thus"
         "improve the model's throughput. However, if the value is too high, it may cause out-of-memory (OOM) errors"
@@ -216,7 +206,7 @@ def main():
         "--temperature",
         type=float,
         required=False,
-        default=0,
+        default=0.3,
         help="Temperature for sampling during chat or test. The higher the temperature, the more random the completions.",
     )
 
@@ -237,7 +227,13 @@ def main():
 
 if __name__ == "__main__":
     # https://hugging-face.cn/docs/trl/index
-    # python main.py --task=chat_vllm --checkpoint_dir=./checkpoint
-    # python main.py --task=sft_train --checkpoint_dir=./checkpoint --bf16 --per_device_train_batch_size=8 --save_strategy=epoch
-    # python main.py --task=grpo_train --checkpoint_dir=./checkpoint --bf16 --use_vllm --save_strategy=epoch
+    # https://huggingface.co/Qwen/Qwen2.5-0.5B-Instruct
+    # python3 ./model/mini_qwen_grpo/main.py --task=sft_train --model_name_or_path=Qwen/Qwen2.5-0.5B-Instruct --checkpoint_dir=./checkpoint/sft --bf16 --save_strategy=epoch
+    # python3 ./model/mini_qwen_grpo/main.py --task=grpo_train --model_name_or_path=Qwen/Qwen2.5-0.5B-Instruct --checkpoint_dir=./checkpoint/grpo --bf16 --save_strategy=epoch
+    # python3 ./model/mini_qwen_grpo/main.py --task=chat --checkpoint_dir=./checkpoint/???
+    # python3 ./model/mini_qwen_grpo/main.py --task=test --checkpoint_dir=./checkpoint/???
     main()
+
+    # norm  43.9%
+    # sft   34.5%
+    # grpo

@@ -9,7 +9,7 @@ from reward import extract_number_from_boxed_string
 
 def test(args):
     model = AutoModelForCausalLM.from_pretrained(
-        args.checkpoint_dir, torch_dtype="auto", device_map="auto"
+        args.checkpoint_dir, dtype="auto", device_map="auto"
     )
     tokenizer = AutoTokenizer.from_pretrained(args.checkpoint_dir)
 
@@ -43,8 +43,8 @@ def test(args):
         extracted_number = extract_number_from_boxed_string(generated_text)
         if extracted_number == a.replace(" ", "").replace(",", ""):
             correct_num += 1
-        else:
-            print(f"Q: {q}\nPred: {generated_text}, Ans: {a}\n")
+        # else:
+        #     print(f"Error! Extracted: {extracted_number} Ans: {a}\n")
 
     print("Accuracy:", correct_num / len(data) if data else "N/A")
 
@@ -83,7 +83,7 @@ def test_vllm(args):
         extracted_number = extract_number_from_boxed_string(generated_text)
         if extracted_number == a.replace(" ", "").replace(",", ""):
             correct_num += 1
-        else:
-            print(f"Q: {q}\nPred: {generated_text}, Ans: {a}\n")
+        # else:
+        #     print(f"Error! Extracted: {extracted_number} Ans: {a}\n")
 
     print("Accuracy:", correct_num / len(data) if data else "N/A")

@@ -20,3 +20,5 @@ tqdm==4.67.1
 trl==0.25.1
 swanlab==0.7.2
 vllm==0.10.2
+cudatoolkit==11.8.0 
+# sudo apt-get install nvidia-cuda-toolkit
