@@ -89,10 +89,17 @@ def main():
         help="The batch size per device for training.",
     )
     parser.add_argument(
+        "--gradient_accumulation_steps",
+        type=int,
+        required=False,
+        default=8,
+        help="Number of updates steps to accumulate the gradients for, before performing a backward/update pass.",
+    )
+    parser.add_argument(
         "--learning_rate",
         type=float,
         required=False,
-        default=5e-6,
+        default=1e-5,
         help="The initial learning rate for [`AdamW`] optimizer.",
     )
     parser.add_argument(
@@ -131,13 +138,6 @@ def main():
         help="The weight decay to apply to all layers except all bias and LayerNorm weights in the optimizer.",
     )
     parser.add_argument(
-        "--gradient_accumulation_steps",
-        type=int,
-        required=False,
-        default=4,
-        help="Number of updates steps to accumulate the gradients for, before performing a backward/update pass.",
-    )
-    parser.add_argument(
         "--max_grad_norm",
         type=float,
         required=False,
@@ -168,7 +168,7 @@ def main():
         "--logging_steps",
         type=int,
         required=False,
-        default=10,
+        default=50,
         help="Number of update steps between two logs.",
     )
     parser.add_argument(
@@ -180,10 +180,33 @@ def main():
     )
 
     parser.add_argument(
+        "--per_device_eval_batch_size",
+        type=int,
+        required=False,
+        default=1,
+        help="The batch size per device for evaluation.",
+    )
+    parser.add_argument(
+        "--eval_strategy",
+        type=str,
+        required=False,
+        default="steps",
+        choices=["no", "steps", "epoch", "best"],
+        help="The evaluation strategy to adopt during training.",
+    )
+    parser.add_argument(
+        "--eval_steps",
+        type=int,
+        required=False,
+        default=200,
+        help="Number of update steps between two evaluations.",
+    )
+
+    parser.add_argument(
         "--num_generations",
         type=int,
         required=False,
-        default=4,
+        default=2,
         help="Number of generations per prompt to sample. The global batch size (num_processes * per_device_batch_size) must be divisible by this value.",
     )
     parser.add_argument(
@@ -230,10 +253,10 @@ if __name__ == "__main__":
     # https://huggingface.co/Qwen/Qwen2.5-0.5B-Instruct
     # python3 ./model/mini_qwen_grpo/main.py --task=sft_train --model_name_or_path=Qwen/Qwen2.5-0.5B-Instruct --checkpoint_dir=./checkpoint/sft --bf16 --save_strategy=epoch
     # python3 ./model/mini_qwen_grpo/main.py --task=grpo_train --model_name_or_path=Qwen/Qwen2.5-0.5B-Instruct --checkpoint_dir=./checkpoint/grpo --bf16 --save_strategy=epoch
-    # python3 ./model/mini_qwen_grpo/main.py --task=chat --checkpoint_dir=./checkpoint/???
-    # python3 ./model/mini_qwen_grpo/main.py --task=test --checkpoint_dir=./checkpoint/???
+    # python3 ./model/mini_qwen_grpo/main.py --task=chat_vllm --checkpoint_dir=./checkpoint/???
+    # python3 ./model/mini_qwen_grpo/main.py --task=test_vllm --checkpoint_dir=./checkpoint/???
     main()
 
     # norm  43.9%
-    # sft   34.5%
+    # sft-935   34.5%
     # grpo

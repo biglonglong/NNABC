@@ -11,7 +11,9 @@ def test(args):
     model = AutoModelForCausalLM.from_pretrained(
         args.checkpoint_dir, dtype="auto", device_map="auto"
     )
-    tokenizer = AutoTokenizer.from_pretrained(args.checkpoint_dir)
+    tokenizer = AutoTokenizer.from_pretrained(
+        args.checkpoint_dir, fix_mistral_regex=True
+    )
 
     data = get_dataset(split="test")
     correct_num = 0
