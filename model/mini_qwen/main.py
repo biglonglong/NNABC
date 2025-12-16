@@ -1,8 +1,9 @@
 import argparse
 from grpo_train import train as grpo_train
 from sft_train import train as sft_train
-from chat import chat, chat_vllm
-from test import test, test_vllm
+from lora_train import train as lora_train
+from chat import chat, chat_vllm, chat_lora
+from test import test, test_vllm, test_lora
 
 
 def main():
@@ -13,7 +14,15 @@ def main():
         type=str,
         required=True,
         default="sft_train",
-        choices=["grpo_train", "sft_train", "chat", "chat_vllm", "test", "test_vllm"],
+        choices=[
+            "lora_train",
+            "grpo_train",
+            "sft_train",
+            "chat",
+            "chat_vllm",
+            "test",
+            "test_vllm",
+        ],
         help="The task to be performed.",
     )
     parser.add_argument(
@@ -226,6 +235,44 @@ def main():
     )
 
     parser.add_argument(
+        "--lora_r",
+        type=int,
+        required=False,
+        default=16,
+        help="LoRA rank.",
+    )
+    parser.add_argument(
+        "--lora_alpha",
+        type=int,
+        required=False,
+        default=32,
+        help="LoRA alpha.",
+    )
+    parser.add_argument(
+        "--lora_dropout",
+        type=float,
+        required=False,
+        default=0.1,
+        help="LoRA dropout.",
+    )
+    parser.add_argument(
+        "--lora_target_modules",
+        nargs="+",
+        type=str,
+        required=False,
+        default=[
+            "q_proj",
+            "k_proj",
+            "v_proj",
+            "o_proj",
+            "gate_proj",
+            "up_proj",
+            "down_proj",
+        ],
+        help="Comma-separated list of target modules for LoRA, select from 'q_proj,k_proj,v_proj,o_proj,gate_proj,up_proj,down_proj'.",
+    )
+
+    parser.add_argument(
         "--temperature",
         type=float,
         required=False,
@@ -234,7 +281,10 @@ def main():
     )
 
     args = parser.parse_args()
-    if args.task == "grpo_train":
+
+    if args.task == "lora_train":
+        lora_train(args)
+    elif args.task == "grpo_train":
         grpo_train(args)
     elif args.task == "sft_train":
         sft_train(args)
@@ -242,19 +292,23 @@ def main():
         chat(args)
     elif args.task == "chat_vllm":
         chat_vllm(args)
+    elif args.task == "chat_lora":
+        chat_lora(args)
     elif args.task == "test":
         test(args)
     elif args.task == "test_vllm":
         test_vllm(args)
+    elif args.task == "test_lora":
+        test_lora(args)
 
 
 if __name__ == "__main__":
     # https://hugging-face.cn/docs/trl/index
     # https://huggingface.co/Qwen/Qwen2.5-0.5B-Instruct
-    # python3 ./model/mini_qwen_grpo/main.py --task=sft_train --model_name_or_path=Qwen/Qwen2.5-0.5B-Instruct --checkpoint_dir=./checkpoint/sft --bf16 --save_strategy=epoch
-    # python3 ./model/mini_qwen_grpo/main.py --task=grpo_train --model_name_or_path=Qwen/Qwen2.5-0.5B-Instruct --checkpoint_dir=./checkpoint/grpo --bf16 --save_strategy=epoch
-    # python3 ./model/mini_qwen_grpo/main.py --task=chat_vllm --checkpoint_dir=./checkpoint/???
-    # python3 ./model/mini_qwen_grpo/main.py --task=test_vllm --checkpoint_dir=./checkpoint/???
+    # python3 ./model/mini_qwen/main.py --task=sft_train --model_name_or_path=Qwen/Qwen2.5-0.5B-Instruct --checkpoint_dir=./checkpoint/sft --bf16 --save_strategy=epoch
+    # python3 ./model/mini_qwen/main.py --task=grpo_train --model_name_or_path=Qwen/Qwen2.5-0.5B-Instruct --checkpoint_dir=./checkpoint/grpo --bf16 --save_strategy=epoch
+    # python3 ./model/mini_qwen/main.py --task=chat_vllm --checkpoint_dir=./checkpoint/???
+    # python3 ./model/mini_qwen/main.py --task=test_vllm --checkpoint_dir=./checkpoint/???
     main()
 
     # norm  43.9%

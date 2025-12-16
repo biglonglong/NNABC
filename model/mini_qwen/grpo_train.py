@@ -13,15 +13,16 @@ def train(args):
         cache_dir=args.cache_dir,
         dtype=torch.bfloat16 if args.bf16 else None,
         use_cache=False,
-        device_map=None,
-    ).to("cuda")
+        device_map="auto",
+        trust_remote_code=True,
+    )
     model.gradient_checkpointing_enable()
 
     tokenizer = AutoTokenizer.from_pretrained(
         args.model_name_or_path,
         cache_dir=args.cache_dir,
         padding_side="left",
-        fix_mistral_regex=True,
+        trust_remote_code=True,
     )
     if tokenizer.pad_token is None:
         tokenizer.pad_token = tokenizer.eos_token

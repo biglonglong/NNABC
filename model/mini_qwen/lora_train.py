@@ -2,24 +2,49 @@ import torch
 import time
 from transformers import AutoTokenizer, AutoModelForCausalLM
 from trl import SFTConfig, SFTTrainer
+from peft import LoraConfig, get_peft_model, TaskType
 from swanlab.integration.transformers import SwanLabCallback
 from utils import get_dataset
 
 
 def train(args):
+    # bnb_config = BitsAndBytesConfig(
+    #     load_in_4bit=True,
+    #     bnb_4bit_quant_type="nf4",
+    #     bnb_4bit_compute_dtype=torch.bfloat16,
+    #     bnb_4bit_use_double_quant=True,
+    # )
+
     model = AutoModelForCausalLM.from_pretrained(
         args.model_name_or_path,
         cache_dir=args.cache_dir,
         dtype=torch.bfloat16 if args.bf16 else None,
+        # quantization_config=bnb_config,
         use_cache=False,
-        device_map=None,
-    ).to("cuda")
+        device_map="auto",
+        trust_remote_code=True,
+    )
+    # print([n for n, _ in model.named_modules() if "proj" in n])
 
     tokenizer = AutoTokenizer.from_pretrained(
-        args.model_name_or_path, cache_dir=args.cache_dir, fix_mistral_regex=True
+        args.model_name_or_path,
+        cache_dir=args.cache_dir,
+        trust_remote_code=True,
     )
     if tokenizer.pad_token is None:
         tokenizer.pad_token = tokenizer.eos_token
+
+    lora_config = LoraConfig(
+        task_type=TaskType.CAUSAL_LM,
+        r=args.lora_r,
+        lora_alpha=args.lora_alpha,
+        lora_dropout=args.lora_dropout,
+        target_modules=args.lora_target_modules,
+        bias="none",
+        inference_mode=False,
+    )
+    model = get_peft_model(model, lora_config)
+    # model.print_trainable_parameters()
 
     training_args = SFTConfig(
         output_dir=args.checkpoint_dir,
@@ -45,7 +70,7 @@ def train(args):
         eval_steps=args.eval_steps,
     )
 
-    cur_experiment_name = f"mini-qwen-sft-{time.strftime('%Y%m%d-%H%M%S')}"
+    cur_experiment_name = f"mini-qwen-lora-{time.strftime('%Y%m%d-%H%M%S')}"
     swanlab_callback = SwanLabCallback(
         project="test", experiment_name=cur_experiment_name
     )

@@ -69,7 +69,7 @@
 | LeNet-5        | LSTM                                 |
 | AlexNet        | GRU                                  |
 | VGG-16         | Transformer（distilgpt2 fine-tune）  |
-| GoogLeNet      | mini_qwen_grpo（Qwen-0.5B sft/grpo） |
+| GoogLeNet      | mini_qwen（Qwen-0.5B sft/lora/grpo） |
 | ResNet-18      |                                      |
 | DenseNet       |                                      |
 |                |                                      |
