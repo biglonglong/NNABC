@@ -8,7 +8,6 @@ from test import test, test_vllm, test_lora
 
 def main():
     parser = argparse.ArgumentParser(description="Simple example of a training script.")
-
     parser.add_argument(
         "--task",
         type=str,
@@ -20,8 +19,10 @@ def main():
             "sft_train",
             "chat",
             "chat_vllm",
+            "chat_lora",
             "test",
             "test_vllm",
+            "test_lora",
         ],
         help="The task to be performed.",
     )
@@ -54,13 +55,6 @@ def main():
         choices=["first_half", "second_half"],
         help="Whether to use only the first half or the second half or the whole of the dataset for training.",
     )
-    parser.add_argument(
-        "--reward_funcs",
-        type=str,
-        required=False,
-        default="strict_format_reward_func,correctness_reward_func",
-        help="A comma-separated list of reward functions to be used during RL training.",
-    )
 
     parser.add_argument(
         "--max_seq_length",
@@ -68,13 +62,6 @@ def main():
         required=False,
         default=2560,
         help="Maximum length of the tokenized sequence during sft training. Sequences longer are truncated from the right.",
-    )
-    parser.add_argument(
-        "--max_prompt_length",
-        type=int,
-        required=False,
-        default=256,
-        help="Maximum length of the tokenized prompt during RL training. Prompt longer are truncated from the left.",
     )
     parser.add_argument(
         "--max_completion_length",
@@ -87,21 +74,21 @@ def main():
         "--epochs",
         type=int,
         required=False,
-        default=1,
+        default=2,
         help="Total number of training epochs to perform.",
     )
     parser.add_argument(
         "--per_device_train_batch_size",
         type=int,
         required=False,
-        default=1,
+        default=2,
         help="The batch size per device for training.",
     )
     parser.add_argument(
         "--gradient_accumulation_steps",
         type=int,
         required=False,
-        default=8,
+        default=32,
         help="Number of updates steps to accumulate the gradients for, before performing a backward/update pass.",
     )
     parser.add_argument(
@@ -143,7 +130,7 @@ def main():
         "--weight_decay",
         type=float,
         required=False,
-        default=0.1,
+        default=0.01,
         help="The weight decay to apply to all layers except all bias and LayerNorm weights in the optimizer.",
     )
     parser.add_argument(
@@ -177,7 +164,7 @@ def main():
         "--logging_steps",
         type=int,
         required=False,
-        default=50,
+        default=25,
         help="Number of update steps between two logs.",
     )
     parser.add_argument(
@@ -207,7 +194,7 @@ def main():
         "--eval_steps",
         type=int,
         required=False,
-        default=200,
+        default=25,
         help="Number of update steps between two evaluations.",
     )
 
@@ -219,6 +206,20 @@ def main():
         help="Number of generations per prompt to sample. The global batch size (num_processes * per_device_batch_size) must be divisible by this value.",
     )
     parser.add_argument(
+        "--max_prompt_length",
+        type=int,
+        required=False,
+        default=256,
+        help="Maximum length of the tokenized prompt during RL training. Prompt longer are truncated from the left.",
+    )
+    parser.add_argument(
+        "--reward_funcs",
+        type=str,
+        required=False,
+        default="strict_format_reward_func,correctness_reward_func",
+        help="A comma-separated list of reward functions to be used during RL training.",
+    )
+    parser.add_argument(
         "--use_vllm",
         action="store_true",
         help="Whether to use vLLM for generating completions.",
@@ -227,7 +228,7 @@ def main():
         "--vllm_gpu_ratio",
         type=float,
         required=False,
-        default=0.9,
+        default=0.4,
         help="Ratio (between 0 and 1) of GPU memory to reserve for the model weights, activations, and KV cache on the"
         "device dedicated to generation powered by vLLM. Higher values will increase the KV cache size and thus"
         "improve the model's throughput. However, if the value is too high, it may cause out-of-memory (OOM) errors"
@@ -238,21 +239,21 @@ def main():
         "--lora_r",
         type=int,
         required=False,
-        default=16,
+        default=8,
         help="LoRA rank.",
     )
     parser.add_argument(
         "--lora_alpha",
         type=int,
         required=False,
-        default=32,
+        default=16,
         help="LoRA alpha.",
     )
     parser.add_argument(
         "--lora_dropout",
         type=float,
         required=False,
-        default=0.1,
+        default=0.05,
         help="LoRA dropout.",
     )
     parser.add_argument(
@@ -262,12 +263,7 @@ def main():
         required=False,
         default=[
             "q_proj",
-            "k_proj",
             "v_proj",
-            "o_proj",
-            "gate_proj",
-            "up_proj",
-            "down_proj",
         ],
         help="Comma-separated list of target modules for LoRA, select from 'q_proj,k_proj,v_proj,o_proj,gate_proj,up_proj,down_proj'.",
     )
@@ -276,7 +272,7 @@ def main():
         "--temperature",
         type=float,
         required=False,
-        default=0.3,
+        default=0.1,
         help="Temperature for sampling during chat or test. The higher the temperature, the more random the completions.",
     )
 
@@ -306,11 +302,13 @@ if __name__ == "__main__":
     # https://hugging-face.cn/docs/trl/index
     # https://huggingface.co/Qwen/Qwen2.5-0.5B-Instruct
     # python3 ./model/mini_qwen/main.py --task=sft_train --model_name_or_path=Qwen/Qwen2.5-0.5B-Instruct --checkpoint_dir=./checkpoint/sft --bf16 --save_strategy=epoch
+    # python3 ./model/mini_qwen/main.py --task=lora_train --model_name_or_path=Qwen/Qwen2.5-0.5B-Instruct --checkpoint_dir=./checkpoint/lora --bf16 --save_strategy=epoch
     # python3 ./model/mini_qwen/main.py --task=grpo_train --model_name_or_path=Qwen/Qwen2.5-0.5B-Instruct --checkpoint_dir=./checkpoint/grpo --bf16 --save_strategy=epoch
-    # python3 ./model/mini_qwen/main.py --task=chat_vllm --checkpoint_dir=./checkpoint/???
+    # python3 ./model/mini_qwen/main.py --task=chat_vllm --model_name_or_path=Qwen/Qwen2.5-0.5B-Instruct --checkpoint_dir=./checkpoint/???
     # python3 ./model/mini_qwen/main.py --task=test_vllm --checkpoint_dir=./checkpoint/???
     main()
 
     # norm  43.9%
     # sft-935   34.5%
+    # lora-935  31.3%
     # grpo

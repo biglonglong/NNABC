@@ -11,6 +11,7 @@
 - 安装 [Anaconda](https://www.anaconda.com/)
 - 安装 [NVIDIA GeForce Driver](https://www.nvidia.com/drivers/) (GPU 支持)
 - 安装 [PyTorch（cudatoolkit、cuDNN）](https://pytorch.org/)
+- 安装 [NVIDIA CUDA Toolkit](https://developer.nvidia.com/cuda-downloads)
 
 ### Steps
 

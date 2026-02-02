@@ -56,8 +56,13 @@ def test(args):
             correct_num += 1
         # else:
         #     print(f"Error! Extracted: {extracted_number} Ans: {a}\n")
+        print("Current Accuracy:", correct_num / (i + 1))
+        print("Q:", q)
+        print("A:", a)
+        print("Generated Answer:", generated_text)
+        input("Press Enter to continue...")
 
-    print("Accuracy:", correct_num / len(data) if data else "N/A")
+    print("Final Accuracy:", correct_num / len(data) if data else "N/A")
 
 
 def test_vllm(args):
@@ -100,7 +105,7 @@ def test_vllm(args):
         # else:
         #     print(f"Error! Extracted: {extracted_number} Ans: {a}\n")
 
-    print("Accuracy:", correct_num / len(data) if data else "N/A")
+    print("Final Accuracy:", correct_num / len(data) if data else "N/A")
 
 
 def test_lora(args):
@@ -157,5 +162,10 @@ def test_lora(args):
             correct_num += 1
         # else:
         #     print(f"Error! Extracted: {extracted_number} Ans: {a}\n")
+        print("Current Accuracy:", correct_num / (i + 1))
+        print("Q:", q)
+        print("A:", a)
+        print("Generated Answer:", generated_text)
+        input("Press Enter to continue...")
 
-    print("Accuracy:", correct_num / len(data) if data else "N/A")
+    print("Final Accuracy:", correct_num / len(data) if data else "N/A")
